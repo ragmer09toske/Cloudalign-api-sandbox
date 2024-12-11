@@ -1,7 +1,12 @@
+/**
+ * @fileoverview Main server file for the Cloudalign-API application.
+ * Configures and starts the Express server, sets up routes, and handles alarm polling.
+ */
+
+require("dotenv").config();
 const express = require("express");
 const cors = require("cors");
-const ArgosRoutes = require("./Routes/GetAlarms/Argos");
-const socketIo = require("socket.io");
+const Mongo_apiKey = process.env.MONGODB_KEY;
 const http = require("http");
 const alarmsController = require("./Contollers/GetAlarms/Argos");
 
@@ -17,7 +22,6 @@ const io = socketIo(server, {
   },
 });
 
-// Middleware to parse JSON bodies
 app.use(express.json());
 
 // Pass the socket.io instance to the controller
@@ -48,6 +52,14 @@ app.use("/", ArgosRoutes);
 
 // Start the server
 const PORT = process.env.PORT || 8000;
-server.listen(PORT, () => {
-  console.log(`Server is running on http://localhost:${PORT}`);
-});
+mongoose
+  .connect(uri)
+  .then(() => {
+    console.log("Database Connection succeeded");
+    app.listen(PORT, () => {
+      console.log(`Server started at port ${PORT}`);
+    });
+  })
+  .catch((error) => {
+    console.log(error);
+  });
