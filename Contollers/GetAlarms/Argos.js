@@ -1,5 +1,4 @@
 const axios = require("axios");
-const fs = require("fs");
 let io;
 require("dotenv").config();
 
@@ -38,8 +37,7 @@ exports.listenAndExportAlarms = async (req, res) => {
 };
 
 exports.fetchAlarmsFromExternalApi = async (req, res) => {
-  const apiUrl =
-    "https://api.netbiter.net/operation/v1/rest/json/system/0030116A465A/alarm";
+  const apiUrl = `https://api.netbiter.net/operation/v1/rest/json/system/${process.env.SYSTEM_ID}/alarm`;
   const accessKey = process.env.ACCESS_KEY;
   const alarmPostUrl = "https://alarm-test.vodacom.co.za";
   const username = "appduser";

@@ -6,60 +6,84 @@
 require("dotenv").config();
 const express = require("express");
 const cors = require("cors");
-const Mongo_apiKey = process.env.MONGODB_KEY;
+const ArgosRoutes = require("./Routes/GetAlarms/Argos");
+const socketIo = require("socket.io");
 const http = require("http");
 const alarmsController = require("./Contollers/GetAlarms/Argos");
+const { localEnv_3000_url, production_url } = require("./Constants");
+const { listenAndExportAlarms } = require("./Contollers/GetAlarms/Argos");
 
 const app = express();
 const server = http.createServer(app);
 
-// Configure Socket.IO with CORS settings
 const io = socketIo(server, {
+  path: "/api/socket.io",
   cors: {
-    origin: "http://localhost:3000", // Allow the client URL
-    methods: ["GET", "POST"], // Allow the required methods
-    credentials: true, // Allow cookies or session if needed
+    origin: ["http://localhost:3000", "https://netcloud-opal.vercel.app"],
+    methods: ["GET", "POST"],
+    credentials: true,
   },
 });
 
 app.use(express.json());
-
-// Pass the socket.io instance to the controller
 alarmsController.setSocketIo(io);
 
-// Enable CORS for all Express routes
 app.use(
   cors({
-    origin: "http://localhost:3000", // Allow the client URL
-    methods: ["GET", "POST", "PUT", "DELETE"], // Allowed HTTP methods
-    credentials: true, // Allow credentials
+    origin: ["http://localhost:3000", "https://netcloud-opal.vercel.app"],
+    methods: ["GET", "POST", "PUT", "DELETE"],
+    credentials: true,
   })
 );
 
+let pollingInterval = 100000;
+let pollingActive = true;
+
+/**
+ * Polls alarms from an external API at a specified interval.
+ * Adjusts the polling interval based on the response from the API.
+ * If the API returns a 403 status with a specific error code, the polling interval is adjusted to the next refill time.
+ * Logs errors encountered during polling.
+ */
 const pollAlarms = async () => {
+  if (!pollingActive) return;
   try {
     await alarmsController.fetchAlarmsFromExternalApi();
   } catch (error) {
+    handlePollingError(error);
+  } finally {
+    setTimeout(pollAlarms, pollingInterval);
+  }
+};
+
+const handlePollingError = (error) => {
+  if (error.response?.status === 403 && error.response.data.code === 1700) {
+    adjustPollingInterval(error.response.data.message);
+  } else {
     console.error("Error during alarm polling:", error.message);
   }
 };
 
-// Poll the alarms every 10 seconds
-setInterval(pollAlarms, 10000);
+const adjustPollingInterval = (message) => {
+  const nextRefillMatch = message.match(/Next refill \(UTC time\) ([^)]*)/);
+  if (nextRefillMatch) {
+    const nextRefillTime = new Date(nextRefillMatch[1]);
+    if (!isNaN(nextRefillTime)) {
+      const delay = nextRefillTime - new Date();
+      pollingInterval = delay > 0 ? delay : 6000000;
+    }
+  }
+};
 
-// Routing
+pollAlarms();
+
 app.use("/", ArgosRoutes);
 
-// Start the server
+server.on("close", () => {
+  pollingActive = false;
+});
+
 const PORT = process.env.PORT || 8000;
-mongoose
-  .connect(uri)
-  .then(() => {
-    console.log("Database Connection succeeded");
-    app.listen(PORT, () => {
-      console.log(`Server started at port ${PORT}`);
-    });
-  })
-  .catch((error) => {
-    console.log(error);
-  });
+server.listen(PORT, () => {
+  console.log(`Server is running on http://localhost:${PORT}`);
+});
