@@ -107,17 +107,6 @@ exports.fetchAlarmsFromExternalApi = async (req, res) => {
       const authConfig = {
         auth: { username, password },
       };
-
-      // await axios
-      //   .post(alarmPostUrl, transformedAlarm, authConfig)
-      //   .then(console.log("Send successfully"))
-      //   .catch((error) => {
-      //     console.error("Error during POST request:", error.message);
-      //     if (error.response) {
-      //       console.error("Response data:", error.response.data);
-      //       console.error("Response status:", error.response.status);
-      //     }
-      //   });
     }
 
     if (res)
