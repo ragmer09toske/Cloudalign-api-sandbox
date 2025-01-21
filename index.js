@@ -172,7 +172,7 @@ const adjustPollingInterval = (message) => {
     };
 
     // Start polling
-    pollAlarms();
+    // pollAlarms();
 
     app.use("/", ArgosRoutes);
 
