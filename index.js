@@ -176,9 +176,9 @@ const adjustPollingInterval = (message) => {
 
     app.use("/", ArgosRoutes);
 
-    server.on("close", () => {
-      pollingActive = false;
-    });
+    // server.on("close", () => {
+    //   pollingActive = false;
+    // });
 
     const PORT = process.env.PORT || 8000;
     server.listen(PORT, () => {
@@ -190,7 +190,7 @@ const adjustPollingInterval = (message) => {
 };
 
 // Start polling
-pollAlarms();
+// pollAlarms();
 
 app.use("/", ArgosRoutes);
 
