@@ -6,6 +6,7 @@ require("dotenv").config();
 exports.setSocketIo = (socketIoInstance) => {
   io = socketIoInstance;
 };
+
 exports.listenAndExportAlarms = async (req, res) => {
   const apiUrl = `https://api.netbiter.net/operation/v1/rest/json/system/${process.env.SYSTEM_ID}/alarm`;
   const accessKey = process.env.ACCESS_KEY;

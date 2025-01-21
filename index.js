@@ -32,7 +32,7 @@ app.use(
 );
 
 let pollingInterval = 60000000; // Initial polling interval
-let pollingActive = true;
+let pollingActive = false;
 
 // Polling function
 const pollAlarms = async () => {
