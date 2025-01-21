@@ -31,7 +31,7 @@ app.use(
   })
 );
 
-let pollingInterval = 10000000; // Initial polling interval
+let pollingInterval = 60000000; // Initial polling interval
 let pollingActive = true;
 
 // Polling function
@@ -108,7 +108,7 @@ const adjustPollingInterval = (message) => {
       })
     );
 
-    let pollingInterval = 600000; // Start with a long polling interval (10 minutes)
+    let pollingInterval = 200000; // Start with a long polling interval (10 minutes)
     let pollingActive = true;
     let backoffFactor = 1.5; // Exponential backoff factor
     let maxPollingInterval = 3600000; // Set a maximum polling interval (1 hour)
