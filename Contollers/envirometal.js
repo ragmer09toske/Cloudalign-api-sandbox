@@ -30,12 +30,10 @@ exports.processThingSpeakData = (req, res) => {
 exports.processGeneric = (req, res) => {
   try {
     // Log the received data (for debugging or processing)
-    console.log("Received Data Data:", req.body);
 
     // Respond back with the received data (you could add other processing logic)
     return res.status(200).json({
       message: "Data received successfully",
-      receivedData: { channel, feeds },
     });
   } catch (error) {
     console.error("Error processing ThingSpeak data:", error);
