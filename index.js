@@ -2,8 +2,8 @@ require("dotenv").config();
 const express = require("express");
 const cors = require("cors");
 const ArgosRoutes = require("./Routes/GetAlarms/Argos");
+const thingSpeakRoutes = require("./Routes/evirRoutes");
 const http = require("http");
-
 const app = express();
 const server = http.createServer(app);
 
@@ -18,6 +18,7 @@ app.use(
 );
 
 app.use("/", ArgosRoutes);
+app.use("/api", thingSpeakRoutes);
 
 const PORT = process.env.PORT || 8000;
 server.listen(PORT, () => {
