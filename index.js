@@ -2,12 +2,14 @@ require("dotenv").config();
 const express = require("express");
 const cors = require("cors");
 const ArgosRoutes = require("./Routes/GetAlarms/Argos");
-const thingSpeakRoutes = require("./Routes/evirRoutes");
-const http = require("http");
+const mongoose = require("mongoose");
+const Mongo_apiKey = process.env.MONGODB_KEY;
+const uri = `mongodb+srv://${Mongo_apiKey}.c0huo.mongodb.net/?retryWrites=true&w=majority&appName=MangmosothoAuth`;
+const genericRoutes = require("./Routes/evirRoutes");
 const app = express();
-const server = http.createServer(app);
 
 app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
 app.use(
   cors({
@@ -18,9 +20,18 @@ app.use(
 );
 
 app.use("/", ArgosRoutes);
-app.use("/api", thingSpeakRoutes);
+app.use("/api", genericRoutes);
 
+// Start the server
 const PORT = process.env.PORT || 8000;
-server.listen(PORT, () => {
-  console.log(`Server is running on http://localhost:${PORT}`);
-});
+mongoose
+  .connect(uri)
+  .then(() => {
+    console.log("Database Connection succeeded");
+    app.listen(PORT, () => {
+      console.log(`Server started at port ${PORT}`);
+    });
+  })
+  .catch((error) => {
+    console.log(error);
+  });
