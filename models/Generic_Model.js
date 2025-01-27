@@ -1,23 +1,15 @@
 const mongoose = require("mongoose");
-const moment = require("moment-timezone"); // To handle timezone conversion
+const moment = require("moment-timezone");
 
 const userSchema = new mongoose.Schema({
   json_all: {
-    type: mongoose.Schema.Types.Mixed, // Accepts any data type (e.g., object, array, string, etc.)
+    type: mongoose.Schema.Types.Mixed,
     required: true,
   },
   createdAt: {
-    type: Date,
-    default: () => moment().tz("Africa/Maseru").toDate(), // Automatically set to current time in Maseru timezone
+    type: String, // Store as a formatted string (if needed in local time)
+    default: () => moment().tz("Africa/Maseru").format("YYYY-MM-DDTHH:mm:ssZ"), // Store with Maseru time offset
   },
-});
-
-// Optional: Add a pre-save hook if further customization is needed
-userSchema.pre("save", function (next) {
-  if (!this.createdAt) {
-    this.createdAt = moment().tz("Africa/Maseru").toDate();
-  }
-  next();
 });
 
 const Generic = mongoose.model("Json_Generic", userSchema);
