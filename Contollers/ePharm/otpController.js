@@ -1,6 +1,6 @@
-import { SerialPort } from "serialport";
-import { ReadlineParser } from "@serialport/parser-readline";
-import dotenv from "dotenv";
+const { SerialPort } = require("serialport");
+const { ReadlineParser } = require("@serialport/parser-readline");
+const dotenv = require("dotenv");
 
 dotenv.config();
 
@@ -20,7 +20,7 @@ const validOtps = {
 };
 
 // Controller function to handle OTP validation and serial communication
-export const verifyOtp = async (req, res) => {
+exports.verifyOtp = async (req, res) => {
   const { otp } = req.body;
 
   if (!otp) {
