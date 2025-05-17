@@ -41,3 +41,19 @@ exports.getAllGenericData = async (req, res) => {
       .json({ message: "Server error", error: error.message });
   }
 };
+
+exports.deleteAllGenericData = async (req, res) => {
+  try {
+    // Delete all documents in the Generic collection
+    const result = await Generic.deleteMany({});
+
+    // Respond with the number of deleted documents
+    res.status(200).json({
+      message: "All generic data deleted successfully",
+      deletedCount: result.deletedCount,
+    });
+  } catch (error) {
+    console.error("Error deleting generic data:", error);
+    res.status(500).json({ message: "Server error", error: error.message });
+  }
+};
